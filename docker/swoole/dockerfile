@@ -1,16 +1,10 @@
 FROM php:8.1-fpm-alpine
-
-# Copy File Config
-# ADD ./docker/php/www.conf /usr/local/etc/php-fpm.d/www.conf
-
-# Add and set Group
-# RUN addgroup -g 1000 site \
-#     && adduser -G site -g site -s /bin/sh -D site \
-#     && mkdir -p /var/www/html \
-#     && chown site:site /var/www/html
+ARG APP_UID
+ARG APP_GID
 
 # Work in the specific space
 WORKDIR /var/www/html
+
 
 # Install dependencies
 RUN apk add --no-cache freetype libpng libjpeg-turbo freetype-dev libpng-dev libjpeg-turbo-dev \
@@ -25,15 +19,18 @@ RUN apk del --no-cache freetype-dev libpng-dev libjpeg-turbo-dev
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/bin/
 RUN install-php-extensions gd curl json mbstring pdo_mysql xml zip bcmath iconv
 
-# Install swoole
-RUN apk add --no-cache libstdc++ supervisor nano unzip ${PHPIZE_DEPS} \
+
+RUN apk add --no-cache libstdc++ nano unzip ${PHPIZE_DEPS} \
     && pecl install swoole \
     && docker-php-ext-enable swoole \
     && apk del ${PHPIZE_DEPS}
 
-COPY ./docker/swoole/supervisor/supervisor.conf /etc/supervisor/conf.d/supervisor.conf
-COPY ./docker/swoole/supervisor/supervisord.conf /etc/supervisor/supervisord.conf
+RUN wget -O /usr/local/bin/dumb-init "https://github.com/Yelp/dumb-init/releases/download/v1.2.2/dumb-init_1.2.2_amd64" \
+    && wget -O /usr/bin/supercronic "https://github.com/aptible/supercronic/releases/download/v0.2.23/supercronic-linux-amd64"
+RUN chmod +x /usr/local/bin/dumb-init \
+    && chmod +x /usr/bin/supercronic \
+    && mkdir /etc/supercronic \
+    && echo '*/1 * * * * php /var/www/html/artisan schedule:run' > /etc/supercronic/laravel \
+    && chown -R ${APP_UID}:${APP_GID} /var/www/html
 
-COPY ./docker/swoole/run.sh /tmp
-RUN chmod +x /tmp/run.sh
-ENTRYPOINT ["/tmp/run.sh"]
+ENTRYPOINT ["/usr/local/bin/dumb-init"]

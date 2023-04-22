@@ -18,5 +18,5 @@ Route::get('/', function () {
 });
 
 Route::get('/test', function () {
-    return 'fuck uuuuuuu1';
+    return 'fuck uuuuuuu12';
 });
