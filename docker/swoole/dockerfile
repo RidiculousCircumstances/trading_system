@@ -17,7 +17,7 @@ RUN apk del --no-cache freetype-dev libpng-dev libjpeg-turbo-dev
 
 # Install extensions
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/bin/
-RUN install-php-extensions gd curl json mbstring pdo_mysql xml zip bcmath iconv
+RUN install-php-extensions gd curl json mbstring pdo_pgsql xml zip bcmath iconv
 
 
 RUN apk add --no-cache libstdc++ nano unzip ${PHPIZE_DEPS} \

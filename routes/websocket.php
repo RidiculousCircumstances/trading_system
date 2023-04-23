@@ -14,13 +14,13 @@ use SwooleTW\Http\Websocket\Facades\Websocket;
 */
 
 Websocket::on('connect', function ($websocket, Request $request) {
-    // called while socket on connect
+    $websocket->join('room1');
 });
 
 Websocket::on('disconnect', function ($websocket) {
-    // called while socket on disconnect
+//    $websocket->to('room1')->emit("message", $websocket->getUserId() . ' leaved room 1');
 });
 
-Websocket::on('example', function ($websocket, $data) {
-    $websocket->emit('message', $data);
+Websocket::on('message', function (Websocket $websocket, $data) {
+    $websocket->broadcast()->to('room1')->emit('message', $data);
 });

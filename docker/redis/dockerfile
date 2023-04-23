@@ -1,0 +1,6 @@
+FROM redis:alpine
+
+RUN mkdir -p /opt/redis/{etc,data} \
+    && mkdir /opt/redis/data/{bases,log}
+
+CMD [ "redis-server", "/usr/local/etc/redis/redis.conf" ]

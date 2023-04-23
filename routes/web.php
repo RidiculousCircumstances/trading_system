@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use SwooleTW\Http\Websocket\Facades\Websocket;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,5 +19,6 @@ Route::get('/', function () {
 });
 
 Route::get('/test', function () {
-    return 'fuck uuuuuuu12';
+    Websocket::to('room1')->emit('message', 'some person just send request');
+    return 'done';
 });
