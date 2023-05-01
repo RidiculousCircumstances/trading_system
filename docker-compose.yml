@@ -19,10 +19,6 @@ services:
         build:
             context: .
             dockerfile: ./docker/swoole/dockerfile
-            args:
-                APP_UID: ${APP_UID}
-                APP_GID: ${APP_GID}
-        user: "${APP_UID}:${APP_GID}"
         env_file: .env
         volumes:
             - type: bind
@@ -68,8 +64,9 @@ services:
 
 
     db:
-        image: postgres:15.2
-        env_file: .env
+        build:
+            context: .
+            dockerfile: ./docker/postgre/dockerfile
         environment:
             POSTGRES_DB: ${POSTGRES_DB}
             POSTGRES_USER: ${POSTGRES_USER}
@@ -79,16 +76,13 @@ services:
             - type: bind
               source: ./docker/postgre/init
               target: /docker-entrypoint-initdb.d
-            -   type: bind
-                source: /etc/passwd
-                target: /etc/passwd
             - type: volume
               source: dbdata
               target: /var/lib/postgresql/data
         ports:
             - "${POSTGRES_PORT}:5432"
         healthcheck:
-            test: [ "CMD-SHELL", "pg_isready -U test -d test" ]
+            test: [ "CMD-SHELL", "pg_isready -U db_user -d trading_system_db" ]
             interval: 10s
             timeout: 5s
             retries: 5
@@ -99,11 +93,11 @@ services:
             - postgres
 
     pgadmin:
-        image: dpage/pgadmin4:5.7
+        image: dpage/pgadmin4:6.14
         env_file: .env
         environment:
             PGADMIN_DEFAULT_EMAIL: "test@gmail.com"
-            PGADMIN_DEFAULT_PASSWORD: "test"
+            PGADMIN_DEFAULT_PASSWORD: "secret"
             PGADMIN_CONFIG_SERVER_MODE: "False"
         volumes:
             - type: volume
@@ -122,9 +116,6 @@ services:
 
     redis:
         image: "redis:alpine"
-#        build:
-#            context: .
-#            dockerfile: ./docker/redis/dockerfile
         env_file: .env
         restart: unless-stopped
         volumes:

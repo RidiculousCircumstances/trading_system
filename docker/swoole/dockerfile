@@ -1,6 +1,6 @@
 FROM php:8.1-fpm-alpine
-ARG APP_UID
-ARG APP_GID
+#ARG APP_UID
+#ARG APP_GID
 
 # Work in the specific space
 WORKDIR /var/www/html
@@ -31,6 +31,6 @@ RUN chmod +x /usr/local/bin/dumb-init \
     && chmod +x /usr/bin/supercronic \
     && mkdir /etc/supercronic \
     && echo '*/1 * * * * php /var/www/html/artisan schedule:run' > /etc/supercronic/laravel \
-    && chown -R ${APP_UID}:${APP_GID} /var/www/html
+    && chown -R www-data /var/www/html
 
 ENTRYPOINT ["/usr/local/bin/dumb-init"]
