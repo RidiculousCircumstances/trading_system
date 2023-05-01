@@ -23,6 +23,7 @@ services:
                 APP_UID: ${APP_UID}
                 APP_GID: ${APP_GID}
         user: "${APP_UID}:${APP_GID}"
+        env_file: .env
         volumes:
             - type: bind
               source: .
@@ -35,7 +36,6 @@ services:
 
     web:
         <<: *base_app
-#        command: ['php', 'artisan', 'swoole:http', 'start']
         command: php artisan swoole:http start
         ports:
             - "1215:1215"
@@ -46,12 +46,10 @@ services:
 
     main_queue:
         <<: *base_app
-#        command: ['php', 'artisan', 'queue:work']
         command: php artisan queue:work
 
     cron:
         <<: *base_app
-#        command: ['supercronic', '/etc/supercronic/laravel']
         command: supercronic /etc/supercronic/laravel
 
     composer:
@@ -81,6 +79,9 @@ services:
             - type: bind
               source: ./docker/postgre/init
               target: /docker-entrypoint-initdb.d
+            -   type: bind
+                source: /etc/passwd
+                target: /etc/passwd
             - type: volume
               source: dbdata
               target: /var/lib/postgresql/data
@@ -120,10 +121,10 @@ services:
             - postgres
 
     redis:
-#        image: "redis:alpine"
-        build:
-            context: .
-            dockerfile: ./docker/redis/dockerfile
+        image: "redis:alpine"
+#        build:
+#            context: .
+#            dockerfile: ./docker/redis/dockerfile
         env_file: .env
         restart: unless-stopped
         volumes:

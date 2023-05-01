@@ -20,3 +20,6 @@ clean: ## Make clean
 	-docker-compose run $(DC_RUN_ARGS) --no-deps base_app sh -c "\
 		php ./artisan config:clear; php ./artisan route:clear; php ./artisan view:clear; php ./artisan cache:clear file"
 	docker-compose down -v # Stops containers and remove named volumes declared in the `volumes` section
+
+web:
+	APP_UID=$(shell id -u) APP_GID=$(shell id -g) docker-compose exec web sh
