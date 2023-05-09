@@ -27,6 +27,6 @@ class OAuthLoginController extends Controller
     public function handleProviderResponse() {
         $incomingUserData = $this->oauthService->getUser();
         $userData = $this->createUserAction->execute(UserCreateFromThirdPartyDTO::from($incomingUserData));
-        return $this->tokenService->getTokens($userData);
+        return $this->tokenService->getToken($userData);
     }
 }

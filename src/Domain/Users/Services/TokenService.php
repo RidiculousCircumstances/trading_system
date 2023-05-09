@@ -8,7 +8,7 @@ use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 
 class TokenService
 {
-    public function getTokens(UserDTO $userData) {
+    public function getToken(UserDTO $userData) {
         $user = User::where('email', $userData->email)->first();
         return JWTAuth::fromSubject($user);
     }
