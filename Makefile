@@ -9,7 +9,7 @@ install: ## Install all app dependencies
 	docker-compose run $(DC_RUN_ARGS) --no-deps composer composer install --ansi --prefer-dist
 
 up: ## Create and start containers
-	APP_UID=$(shell id -u) APP_GID=$(shell id -g) docker-compose up --build web main_queue cron
+	APP_UID=$(shell id -u) APP_GID=$(shell id -g) docker-compose up --build web main_queue cron nginx pgadmin
 
 down: ## Stop containers
 	docker-compose down
