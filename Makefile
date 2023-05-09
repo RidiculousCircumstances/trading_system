@@ -23,3 +23,6 @@ clean: ## Make clean
 
 web:
 	APP_UID=$(shell id -u) APP_GID=$(shell id -g) docker-compose exec web sh
+
+serveo:
+	ssh -R socialite-test-1337:80:127.0.0.1:8001 serveo.net
