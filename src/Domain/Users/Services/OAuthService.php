@@ -13,7 +13,7 @@ class OAuthService
 
     public function redirect() {
         $provider = $this->getProvider();
-        return Socialite::driver($provider)->stateless()->redirect();
+        return Socialite::driver($provider)->with(["access_type" => "offline", "prompt" => "consent select_account"])->stateless()->redirect();
     }
 
     public function getUser() {
