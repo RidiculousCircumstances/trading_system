@@ -1,0 +1,10 @@
+_format_version: "3.0"
+
+services:
+  - name: main_service
+    url: http://web:1215
+    routes:
+      - name: test
+        paths:
+          - /api/oauth/google
+          - /api/oauth/test

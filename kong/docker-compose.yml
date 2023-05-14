@@ -1,0 +1,58 @@
+version: '3.9'
+
+#volumes:
+#  kong-db:
+#    driver: local
+
+networks:
+  web:
+    driver: bridge
+
+services:
+  kong:
+    image: kong/kong-gateway
+    volumes:
+      - type: bind
+        source: ./config
+        target: /usr/local/kong/declarative
+    environment:
+      - KONG_DATABASE=off
+      - KONG_DECLARATIVE_CONFIG=usr/local/kong/declarative/kong.yml
+      - KONG_PROXY_ACCESS_LOG=/dev/stdout
+      - KONG_ADMIN_ACCESS_LOG=/dev/stdout
+      - KONG_PROXY_ERROR_LOG=/dev/stderr
+      - KONG_ADMIN_ERROR_LOG=/dev/stderr
+      - KONG_ADMIN_LISTEN=0.0.0.0:8001, 0.0.0.0:8444 ssl
+      #      - KONG_ADMIN_GUI_PATH=/manager
+      #      - KONG_ADMIN_GUI_URL=http://localhost:8002/manager
+      - KONG_LOG_LEVEL=debug
+    #      - KONG_PLUGINS=bundled
+    #      - KONG_DATABASE=postgres
+    #      - KONG_PG_HOST=kong-db
+    #      - KONG_PG_PASSWORD=kongpass
+    #      - KONG_PASSWORD=test
+    #    command: ["kong", "migrations", "bootstrap"]
+    ports:
+      - "8000:8000/tcp"
+      - "7990:8001/tcp"
+      - "8443:8443/tcp"
+      - "8444:8444/tcp"
+      - "8002:8002"
+      - "8001:8001"
+    #    depends_on:
+    #      - kong-db
+    networks:
+      - web
+
+  #  kong-db:
+  #    image: postgres:13
+  #    volumes:
+  #      - type: volume
+  #        source: kong-db
+  #        target: /var/lib/postgresql/data
+  #    environment:
+  #      - POSTGRES_USER=kong
+  #      - POSTGRES_DB=kong
+  #      - POSTGRES_PASSWORD=kongpass
+  #    networks:
+  #      - web
